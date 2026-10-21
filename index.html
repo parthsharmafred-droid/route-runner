@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Route Runner">
-<meta name="theme-color" content="#1a62e0">
+<meta name="theme-color" content="#2a6df4">
 <title>Route Runner</title>
 <style>/* required styles */
 
@@ -673,185 +673,242 @@ svg.leaflet-image-layer.leaflet-interactive path {
 </style>
 <style>
 :root{
-  --bg:#f2f4f7;--card:#ffffff;--ink:#14202b;--sub:#5f6b77;--line:#e3e7ec;--soft:#f0f3f6;
-  --blue:#1a62e0;--blue-soft:#e7effd;--on-blue:#ffffff;--green:#1f8a5b;--green-soft:#e1f4ea;
-  --mapbg:#e8ebe6;--danger:#c0392b;--tj:#7b4fc4;--shadow:0 6px 24px rgba(16,24,40,.18);
+  --bg:#f4f6f9;--card:#ffffff;--ink:#121a24;--sub:#667280;--faint:#8a95a3;--line:#e6e9ee;--soft:#f1f4f8;
+  --blue:#2a6df4;--blue-ink:#1f5ad6;--blue-soft:#eaf1fe;--green:#1f8a5b;--green-soft:#e1f4ea;
+  --mapbg:#eef0ea;--danger:#d63a2f;--tj:#7b4fc4;--shadow:0 4px 18px rgba(16,24,40,.16);
   --top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f1418;--card:#1a2229;--ink:#ecf0f3;--sub:#9aa6b1;--line:#2a343d;--soft:#232d36;
-  --blue:#4f8ef5;--blue-soft:#1c2b41;--green:#4cc28a;--green-soft:#183427;
-  --mapbg:#1b2126;--danger:#ff8a7a;--tj:#b892f2;--shadow:0 6px 24px rgba(0,0,0,.5);color-scheme:dark;}}
-:root[data-theme="dark"]{--bg:#0f1418;--card:#1a2229;--ink:#ecf0f3;--sub:#9aa6b1;--line:#2a343d;--soft:#232d36;
-  --blue:#4f8ef5;--blue-soft:#1c2b41;--green:#4cc28a;--green-soft:#183427;
-  --mapbg:#1b2126;--danger:#ff8a7a;--tj:#b892f2;--shadow:0 6px 24px rgba(0,0,0,.5);color-scheme:dark;}
+  --bg:#0f1418;--card:#1a2229;--ink:#ecf0f3;--sub:#9aa6b1;--faint:#7c8894;--line:#2a343d;--soft:#232d36;
+  --blue:#4f8ef5;--blue-ink:#7aa9f7;--blue-soft:#1c2b41;--green:#4cc28a;--green-soft:#183427;
+  --mapbg:#1b2126;--danger:#ff8a7a;--tj:#b892f2;--shadow:0 4px 18px rgba(0,0,0,.5);color-scheme:dark;}}
+:root[data-theme="dark"]{--bg:#0f1418;--card:#1a2229;--ink:#ecf0f3;--sub:#9aa6b1;--faint:#7c8894;--line:#2a343d;--soft:#232d36;
+  --blue:#4f8ef5;--blue-ink:#7aa9f7;--blue-soft:#1c2b41;--green:#4cc28a;--green-soft:#183427;
+  --mapbg:#1b2126;--danger:#ff8a7a;--tj:#b892f2;--shadow:0 4px 18px rgba(0,0,0,.5);color-scheme:dark;}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;font-size:16px;line-height:1.35;-webkit-font-smoothing:antialiased}
 button,select,input,textarea{font:inherit;color:inherit}
-button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border:0;background:none;padding:0}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+svg{flex-shrink:0}
 
-/* map */
+/* ---------- map ---------- */
 #map{position:fixed;inset:0;background:var(--mapbg);z-index:0}
 .leaflet-container{font-family:inherit;background:var(--mapbg)}
-.leaflet-control-attribution{font-size:10px;margin-bottom:calc(var(--sheetH,200px) + 2px)!important;transition:margin .25s}
+.leaflet-control-attribution{font-size:10px;margin-bottom:calc(var(--sheetH,200px) + 2px)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .street .leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.7)}
   :root:not([data-theme="light"]) .leaflet-control-attribution{background:rgba(26,34,41,.85)!important;color:#9aa6b1}
   :root:not([data-theme="light"]) .leaflet-control-attribution a{color:#8fb4f7}}
 :root[data-theme="dark"] .street .leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.7)}
 
-.pin{display:flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 7px;border-radius:15px;background:#fff;color:#1a62e0;border:2.5px solid #1a62e0;font-weight:700;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.35);font-variant-numeric:tabular-nums;transition:transform .15s}
-.pin.next{background:#1a62e0;color:#fff;transform:scale(1.18)}
-.pin.sel{background:#14202b;border-color:#14202b;color:#fff;transform:scale(1.22)}
-.dot{width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid #1a62e0;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+/* teardrop pins */
+.mk{display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 2px 2.5px rgba(0,0,0,.35));--gc:#2a6df4}
+.mk span{min-width:28px;height:28px;padding:0 6px;border-radius:9px;background:#fff;border:2.5px solid var(--gc);color:var(--gc);font-weight:750;font-size:13px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.mk i{display:block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--gc);margin-top:-1px}
+.mk.next span{background:var(--gc);color:#fff}
+.mk.sel{--gc:#121a24}.mk.sel span{background:#121a24;color:#fff}
+.mk.done{--gc:#1f8a5b}.mk.done span{background:#1f8a5b;color:#fff}
+.dot{width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--gc,#2a6df4);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.dot.fill{background:var(--gc)}
 .dot.done{background:#1f8a5b;border:2px solid #fff;width:12px;height:12px}
-.drop{width:18px;height:18px;border-radius:5px;background:#14202b;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.drop{width:18px;height:18px;border-radius:5px;background:#121a24;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .me{width:20px;height:20px;border-radius:50%;background:#2a7bf6;border:3px solid #fff;box-shadow:0 0 0 7px rgba(42,123,246,.25),0 1px 4px rgba(0,0,0,.3)}
 
-/* top bar */
-.top{position:fixed;left:0;right:0;top:0;z-index:600;padding:calc(var(--top) + 10px) 12px 0;display:flex;gap:8px;align-items:flex-start;pointer-events:none}
-.top>*{pointer-events:auto}
-.routepill{flex:1;min-width:0;max-width:420px;position:relative;display:flex;align-items:center;gap:10px;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:8px 12px;height:56px}
-.routepill .ico{width:36px;height:36px;border-radius:11px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.routepill .ico svg{width:20px;height:20px}
-.routepill .tx{min-width:0;flex:1}
-.routepill .nm{font-weight:700;font-size:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.routepill .st{font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.routepill .chev{color:var(--sub);font-size:12px}
-.routepill select{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
-.fabs{position:fixed;right:12px;z-index:550;display:flex;flex-direction:column;gap:8px;bottom:calc(var(--sheetH,200px) + 12px);transition:bottom .25s, opacity .2s}
-.fab{width:46px;height:46px;border-radius:23px;border:0;background:var(--card);color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
-.fab svg{width:22px;height:22px}
-.fab[aria-pressed="true"]{background:var(--blue);color:#fff}
-.sheet-full .fabs{opacity:0;pointer-events:none}
+/* ---------- floating buttons ---------- */
+.fab{width:50px;height:50px;border-radius:25px;background:var(--card);color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+.fab svg{width:23px;height:23px}
+.fab.blue{color:var(--blue)}
+.topl{position:fixed;left:14px;top:calc(var(--top) + 12px);z-index:600;display:flex;gap:10px;align-items:center;max-width:calc(100% - 28px)}
+.chip{height:40px;border-radius:20px;background:var(--card);box-shadow:var(--shadow);padding:0 14px;display:flex;align-items:center;gap:8px;min-width:0;font-weight:650;font-size:15px}
+.chip .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .d{color:var(--sub);font-weight:500;white-space:nowrap}
+.fabs{position:fixed;right:14px;z-index:550;display:flex;flex-direction:column;gap:12px;bottom:calc(var(--sheetH,200px) + 14px);transition:bottom .28s cubic-bezier(.2,.8,.2,1), opacity .2s}
+.sheet-full .fabs,.sheet-full .topl{opacity:0;pointer-events:none}
+.drawing .fabs,.drawing .topl,.drawing .sheet{display:none}
 
-/* bottom sheet */
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:700;max-width:640px;margin:0 auto;background:var(--card);border-radius:22px 22px 0 0;box-shadow:0 -4px 28px rgba(16,24,40,.22);display:flex;flex-direction:column;height:var(--sheetH,200px);transition:height .28s cubic-bezier(.2,.8,.2,1)}
-.sheet.dragging{transition:none}
-.grab{flex-shrink:0;padding:8px 16px 10px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
-.handle{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
-.sumrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.sumrow .l{font-size:15px;color:var(--sub)}
-.sumrow .l b{color:var(--ink);font-size:22px;font-weight:750;margin-right:3px}
-.sumrow .r{font-size:14px;color:var(--sub);white-space:nowrap;text-align:right}
-.sumrow .r b{color:var(--ink);font-weight:650}
-.progress{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:9px}
+/* ---------- bottom sheet ---------- */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:700;max-width:640px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -2px 22px rgba(16,24,40,.18);display:flex;flex-direction:column;height:var(--sheetH,200px);transition:height .28s cubic-bezier(.2,.8,.2,1)}
+.fabs,.leaflet-control-attribution{transition:bottom .28s cubic-bezier(.2,.8,.2,1),margin .28s cubic-bezier(.2,.8,.2,1)}
+.sheet.dragging,.dragging-any .fabs{transition:none}
+.grab{flex-shrink:0;padding:8px 18px 4px;touch-action:none;user-select:none;-webkit-user-select:none}
+.handle{width:42px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+.hdr{display:flex;align-items:center;gap:6px;min-height:44px}
+.hdr .tx{flex:1;min-width:0}
+.hdr .h1{font-size:17px;color:var(--ink);font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .h2{font-size:13.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ibtn{width:42px;height:42px;border-radius:21px;display:flex;align-items:center;justify-content:center;color:var(--sub)}
+.ibtn svg{width:23px;height:23px}
+.ibtn:active{background:var(--soft)}
+.progress{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin:6px 0 4px}
 .progress i{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
-.body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 14px calc(var(--bot) + 24px)}
+.search{display:none;padding:2px 0 6px}
+.search.on{display:block}
+.search input{width:100%;height:42px;border-radius:12px;border:0;background:var(--soft);padding:0 14px;font-size:16px}
+.body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px 16px calc(var(--bot) + 24px)}
 
-/* stop card */
-.card{border-radius:18px;background:var(--soft);padding:14px;margin-bottom:12px}
-.card .k{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
-.card .k .eta{color:var(--blue);white-space:nowrap}
+.bigbtn{width:100%;height:56px;border-radius:16px;background:var(--blue);color:#fff;font-weight:650;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px}
+.bigbtn svg{width:22px;height:22px}
+.bigbtn:disabled{opacity:.65}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btn2{height:46px;border-radius:14px;background:var(--soft);color:var(--ink);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}
+.btn2 svg{width:19px;height:19px;color:var(--blue)}
+.planbox{padding-bottom:6px}
+
+.card{border-radius:18px;background:var(--soft);padding:14px;margin-bottom:6px}
+.card .k{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--sub);font-weight:650;text-transform:uppercase;letter-spacing:.04em}
+.card .k .eta{color:var(--blue-ink);white-space:nowrap}
 .card h2{font-size:25px;line-height:1.15;font-weight:750;margin:5px 0 3px;word-break:break-word}
 .card .note1{font-size:15px;color:var(--sub);margin:0 0 4px}
-.card .note1 .tj{margin-left:0;margin-right:6px}
 .units{display:flex;flex-direction:column;gap:6px;margin:10px 0 2px}
 .units.grid{display:grid;grid-template-columns:1fr 1fr}
 .units.grid .unit{padding:8px 10px;min-height:44px;align-items:flex-start}
 .units.grid .unit .t{font-size:15px}
 .units.grid .unit .n{font-size:12.5px;line-height:1.25}
-.unit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:var(--card);border-radius:12px;padding:9px 12px;min-height:46px}
-.unit .box{width:23px;height:23px;border-radius:7px;border:2px solid var(--sub);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.unit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border-radius:12px;padding:9px 12px;min-height:46px}
+.unit .box{width:23px;height:23px;border-radius:7px;border:2px solid var(--faint);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
 .unit.on .box{background:var(--green);border-color:var(--green);color:#fff}
 .unit.on .t{text-decoration:line-through;color:var(--sub)}
 .unit .t{display:block;font-weight:600}
 .unit .n{display:block;font-size:14px;color:var(--sub)}
 .tj{display:inline-block;font-size:11px;font-weight:700;color:var(--tj);border:1px solid var(--tj);border-radius:5px;padding:0 4px;margin-left:6px;vertical-align:2px;text-transform:none;letter-spacing:0}
+.note1 .tj{margin:0 6px 0 0}
 .cta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.cta a,.cta button{height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:17px;text-decoration:none;border:0}
+.cta a,.cta button{height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:17px;text-decoration:none}
 .cta svg{width:20px;height:20px}
 .cta a{background:var(--blue);color:#fff}
 .cta button{background:#1f8a5b;color:#fff}
-.cta button.undo{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.cta button.undo{background:var(--card);color:var(--ink)}
 .minor{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.minor button{height:36px;border-radius:18px;border:1px solid var(--line);background:var(--card);padding:0 12px;font-size:14px;font-weight:600;color:var(--sub)}
-.allset{background:var(--green-soft);color:var(--green);border-radius:18px;padding:22px 16px;margin-bottom:12px;font-size:22px;font-weight:700;text-align:center}
-.empty{background:var(--soft);border-radius:18px;padding:18px;margin-bottom:12px}
+.minor button{height:36px;border-radius:18px;background:var(--card);padding:0 13px;font-size:14px;font-weight:600;color:var(--sub)}
+.allset{background:var(--green-soft);color:var(--green);border-radius:18px;padding:22px 16px;margin-bottom:6px;font-size:22px;font-weight:700;text-align:center}
+.empty{background:var(--soft);border-radius:18px;padding:18px;margin-bottom:6px}
 .empty h2{margin:0 0 4px;font-size:21px}
 .empty p{margin:0 0 12px;color:var(--sub);font-size:15px}
-.empty .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.empty button{height:48px;border-radius:14px;border:0;font-weight:700;font-size:15.5px;background:var(--card);border:1px solid var(--line)}
-.empty button.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
-
-.actions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px;margin-bottom:4px}
-.actions button,.actions a{height:46px;border-radius:13px;border:1px solid var(--line);background:var(--card);font-size:14.5px;font-weight:650;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;text-decoration:none;color:var(--ink);padding:0 6px;line-height:1.15}
-.actions svg{width:18px;height:18px;flex-shrink:0}
-.actions .pri{background:var(--blue-soft);color:var(--blue);border-color:transparent}
-.actions button:disabled{opacity:.6}
-.msg{font-size:14px;color:var(--sub);min-height:20px;margin:4px 2px 6px}
-.msg:empty{min-height:6px}
+.msg{font-size:14px;color:var(--sub);margin:6px 2px 0}
+.msg:empty{display:none}
 .msg.err{color:var(--danger)}
 
-.listhead{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 2px}
-.listhead h3{margin:0;font-size:18px}
-.link{border:0;background:transparent;color:var(--blue);font-weight:600;font-size:14.5px;padding:8px 2px}
+.listhead{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 2px}
+.listhead h3{margin:0;font-size:13px;color:var(--sub);text-transform:uppercase;letter-spacing:.05em}
+.link{color:var(--blue-ink);font-weight:600;font-size:14.5px;padding:8px 2px}
 .stops{list-style:none;margin:0;padding:0}
-.stop{display:flex;align-items:center;gap:12px;padding:10px 4px}
+.stop{display:flex;align-items:center;gap:12px;padding:11px 4px}
 .stop+.stop{border-top:1px solid var(--line)}
-.stop .badge{width:34px;height:34px;border-radius:50%;flex-shrink:0;border:2px solid var(--blue);background:var(--card);color:var(--blue);font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;padding:0;font-variant-numeric:tabular-nums}
-.stop.next .badge{background:var(--blue);color:#fff}
-.stop.done .badge{background:var(--green);border-color:var(--green);color:#fff;font-size:16px}
+.stop .badge{width:32px;height:32px;border-radius:50%;flex-shrink:0;border:2px solid var(--gc,var(--blue));background:var(--card);color:var(--gc,var(--blue));font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.stop.next .badge{background:var(--gc,var(--blue));color:#fff}
+.stop.done .badge{background:var(--green);border-color:var(--green);color:#fff;font-size:15px}
 .stop.part .badge{border-color:var(--green);color:var(--green)}
-.stop .body2{flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:2px 0}
+.stop .body2{flex:1;min-width:0;text-align:left;padding:2px 0}
 .stop .a{display:block;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stop .m{display:block;font-size:13.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stop .time{font-size:14px;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
-.stop.next .time{color:var(--blue);font-weight:650}
+.stop.next .time{color:var(--blue-ink);font-weight:650}
 .stop.done .a{color:var(--sub);text-decoration:line-through}
-.stop.sel{background:var(--blue-soft);border-color:transparent;border-radius:14px}
+.stop.sel{background:var(--blue-soft);border-radius:14px}
 .stop.sel+.stop{border-color:transparent}
+.gtag{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gc);margin-right:6px;vertical-align:1px}
 
-details{margin-top:12px;background:var(--soft);border-radius:16px;padding:2px 14px}
-summary{font-weight:700;font-size:16px;padding:13px 0;cursor:pointer}
+details{margin-top:14px;background:var(--soft);border-radius:16px;padding:2px 14px}
+summary{font-weight:650;font-size:16px;padding:13px 0;cursor:pointer}
 label{display:block;font-size:14px;color:var(--sub);margin:8px 0 4px}
 textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:10px;font-size:16px}
-textarea{min-height:100px;resize:vertical}
+textarea{min-height:110px;resize:vertical}
 .btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 12px}
-.btns button{height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);padding:0 14px;font-weight:600;font-size:15px}
+.btns button{height:42px;border-radius:12px;background:var(--card);padding:0 14px;font-weight:600;font-size:15px;border:1px solid var(--line)}
 .btns .pri{background:var(--blue);color:#fff;border-color:var(--blue)}
-.btns .danger{color:var(--danger)}
 .note{font-size:13.5px;color:var(--sub);margin:4px 0 12px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--top) + 76px);z-index:900;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;font-size:14.5px;font-weight:600;box-shadow:var(--shadow);max-width:calc(100% - 32px);opacity:0;transition:opacity .25s;pointer-events:none}
+
+/* ---------- side drawer (routes) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(10,14,20,.38);z-index:900;opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;left:0;top:0;bottom:0;width:min(88vw,400px);z-index:910;background:var(--card);border-radius:0 24px 24px 0;transform:translateX(-102%);transition:transform .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.drawer.on{transform:none}
+.dhead{padding:calc(var(--top) + 10px) 16px 18px;background:linear-gradient(135deg,var(--soft) 30%,var(--blue-soft));border-radius:0 24px 0 0}
+.dtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .lg{width:44px;height:44px;border-radius:13px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center}
+.brand .lg svg{width:24px;height:24px}
+.brand b{display:block;font-size:19px}
+.brand span{font-size:14px;color:var(--sub)}
+.dlist{flex:1;overflow-y:auto;padding:4px 10px 10px}
+.mon{font-size:14px;font-weight:650;color:var(--faint);padding:16px 10px 6px}
+.ritem{display:flex;align-items:center;border-radius:14px}
+.ritem.on{background:var(--blue-soft)}
+.ritem .go{flex:1;min-width:0;text-align:left;padding:12px 10px;display:flex;flex-direction:column}
+.ritem .l1{font-size:18px;display:flex;gap:10px;align-items:baseline}
+.ritem .l1 .dt{color:var(--faint);font-variant-numeric:tabular-nums}
+.ritem.on .l1,.ritem.on .l1 .dt{color:var(--blue-ink)}
+.ritem .l2{font-size:13.5px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.ritem .more{width:42px;height:48px;display:flex;align-items:center;justify-content:center;color:var(--faint)}
+.dfoot{padding:12px 16px calc(var(--bot) + 14px);border-top:1px solid var(--line)}
+
+/* ---------- action sheet ---------- */
+.asheet{position:fixed;left:0;right:0;bottom:0;z-index:960;max-width:640px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;padding:10px 12px calc(var(--bot) + 12px);transform:translateY(105%);transition:transform .26s cubic-bezier(.2,.8,.2,1);max-height:85vh;overflow-y:auto}
+.asheet.on{transform:none}
+.asheet h4{margin:6px 10px 8px;font-size:14px;color:var(--sub);font-weight:600}
+.aitem{width:100%;display:flex;align-items:center;gap:14px;padding:13px 10px;border-radius:14px;text-align:left;font-size:16.5px;font-weight:550}
+.aitem:active{background:var(--soft)}
+.aitem svg{width:22px;height:22px;color:var(--blue)}
+.aitem small{display:block;font-size:13px;color:var(--sub);font-weight:400}
+.aitem.danger,.aitem.danger svg{color:var(--danger)}
+.aitem.cancel{justify-content:center;background:var(--soft);margin-top:6px;font-weight:650}
+.ascrim{z-index:950}
+
+/* ---------- draw-to-order mode ---------- */
+#drawLayer{position:fixed;inset:0;z-index:500;display:none;touch-action:none}
+.drawing #drawLayer{display:block}
+.drawing.panmode #drawLayer{pointer-events:none}
+#drawSvg{width:100%;height:100%}
+.dtopbar{position:fixed;left:12px;right:12px;top:calc(var(--top) + 12px);z-index:620;display:none;gap:8px;align-items:center}
+.drawing .dtopbar{display:flex}
+.dtopbar .msgbox{flex:1;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:10px 14px;font-size:14.5px;line-height:1.3}
+.dtopbar .msgbox b{display:block;font-size:16px}
+.dpanel{position:fixed;left:0;right:0;bottom:0;z-index:700;max-width:640px;margin:0 auto;background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -2px 22px rgba(16,24,40,.18);padding:14px 16px calc(var(--bot) + 14px);display:none}
+.drawing .dpanel{display:block}
+.groups{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;min-height:46px}
+.gchip{flex-shrink:0;display:flex;align-items:center;gap:7px;height:34px;border-radius:17px;padding:0 12px;background:var(--soft);font-size:14px;font-weight:600}
+.gchip i{width:12px;height:12px;border-radius:50%;background:var(--gc)}
+.groups .hint{color:var(--sub);font-size:14px;align-self:center}
+.dctl{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.panfab{position:fixed;right:14px;z-index:620;bottom:calc(var(--dpH,220px) + 14px);display:none}
+.drawing .panfab{display:flex}
+.panmode .panfab{background:var(--blue);color:#fff}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--top) + 70px);z-index:990;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;font-size:14.5px;font-weight:600;box-shadow:var(--shadow);max-width:calc(100% - 32px);opacity:0;transition:opacity .25s;pointer-events:none;text-align:center}
 .toast.on{opacity:1}
-@media (prefers-reduced-motion:reduce){.sheet,.progress i,.fabs{transition:none}}
+@media (prefers-reduced-motion:reduce){.sheet,.progress i,.fabs,.drawer,.asheet,.scrim{transition:none}}
 </style>
 </head>
 <body>
-<div id="map" class="street" aria-label="Map of delivery stops in route order"></div>
+<div id="map" class="street" aria-label="Map of delivery stops"></div>
 
-<div class="top">
-  <div class="routepill">
-    <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H16a3.5 3.5 0 0 0 0-7H8a3.5 3.5 0 0 1 0-7h7.5"/></svg></div>
-    <div class="tx"><div class="nm" id="rTitle"></div><div class="st" id="rSub"></div></div>
-    <span class="chev" aria-hidden="true">&#9660;</span>
-    <select id="routeSel" aria-label="Switch route"></select>
-  </div>
+<div class="topl">
+  <button class="fab" id="menuBtn" aria-label="Routes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <button class="chip" id="routeChip"><span class="t" id="chipName"></span><span class="d" id="chipDate"></span></button>
 </div>
 
 <div class="fabs">
-  <button class="fab" id="layerBtn" aria-label="Satellite view" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="m2 13 10 5 10-5"/></svg></button>
-  <button class="fab" id="fitAll" aria-label="Show whole route"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-  <button class="fab" id="locate" aria-label="Show my location"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 3L13.5 21 21 3Z"/></svg></button>
+  <button class="fab blue" id="layerBtn" aria-label="Map style"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="m2 13 10 5 10-5"/></svg></button>
+  <button class="fab blue" id="fitAll" aria-label="Show whole route"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></button>
+  <button class="fab blue" id="locate" aria-label="Show my location"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 3L13.5 21 21 3Z"/></svg></button>
 </div>
 
 <div class="sheet" id="sheet">
   <div class="grab" id="grab">
     <div class="handle"></div>
-    <div class="sumrow"><div class="l" id="sumLeft"></div><div class="r" id="sumRight"></div></div>
+    <div class="hdr">
+      <div class="tx"><div class="h1" id="h1"></div><div class="h2" id="h2"></div></div>
+      <button class="ibtn" id="searchBtn" aria-label="Search stops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button>
+      <button class="ibtn" id="moreBtn" aria-label="More options"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+    </div>
     <div class="progress"><i id="barFill"></i></div>
   </div>
   <div class="body" id="sbody">
-    <div id="nextBox"></div>
-    <div class="actions" id="actions">
-      <button id="optimize" class="pri"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Optimize</button>
-      <button id="optGps">From here</button>
-      <a id="openBatch" target="_blank" rel="noopener">Next 10 in Maps</a>
-    </div>
+    <div class="search" id="searchRow"><input type="search" id="searchIn" placeholder="Search stops" aria-label="Search stops" autocomplete="off"></div>
+    <div id="topBox"></div>
     <div class="msg" id="optMsg" role="status"></div>
-
     <div class="listhead"><h3 id="listTitle">Stops</h3><button class="link" id="toggleHide">Hide delivered</button></div>
     <ol class="stops" id="list"></ol>
 
@@ -863,7 +920,7 @@ textarea{min-height:100px;resize:vertical}
         <button class="pri" id="addPaste">Add to route</button>
         <button id="pinMissing">Find missing pins</button>
       </div>
-      <p class="note">New addresses are looked up on OpenStreetMap so they get a pin. If a pin lands in the wrong place, open that stop and long-press the right spot on the map.</p>
+      <p class="note">New addresses are looked up on OpenStreetMap so they get a pin. If one lands in the wrong place, open that stop and long-press the right spot on the map.</p>
       <div class="msg" id="addMsg" role="status"></div>
     </details>
 
@@ -873,22 +930,42 @@ textarea{min-height:100px;resize:vertical}
       <input type="text" id="rname">
       <label for="area">Area added to address searches</label>
       <input type="text" id="area" placeholder="NB, Canada">
-      <div class="btns">
-        <button id="newRoute">New route</button>
-        <button id="resetDone">Uncheck all</button>
-        <button id="clearDone">Remove delivered</button>
-        <button id="delRoute" class="danger">Delete route</button>
-      </div>
-      <label>Backup</label>
-      <div class="btns">
-        <button id="exportBtn">Save backup file</button>
-        <button id="importBtn">Load backup file</button>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
-      </div>
-      <p class="note">Routes and progress save on this phone only. Optimize plans by road from your last delivered stop.</p>
+      <p class="note">Routes and progress save on this phone only. Use Save backup in the ⋮ menu to move them to another phone.</p>
     </details>
   </div>
 </div>
+
+<!-- draw-to-order mode -->
+<div id="drawLayer"><svg id="drawSvg"></svg></div>
+<div class="dtopbar">
+  <div class="msgbox"><b id="drawTitle">Circle the stops to do first</b><span id="drawSub">Draw a loop around a group of stops with your finger.</span></div>
+</div>
+<button class="fab panfab" id="panBtn" aria-label="Move the map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></button>
+<div class="dpanel" id="dpanel">
+  <div class="groups" id="groups"></div>
+  <div class="dctl">
+    <button class="btn2" id="dUndo">Undo</button>
+    <button class="btn2" id="dClear">Clear</button>
+    <button class="btn2" id="dCancel">Cancel</button>
+  </div>
+  <button class="bigbtn" id="dGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h-4M6 22v-4h4"/></svg>Optimize with these groups</button>
+</div>
+
+<div class="scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" aria-label="Routes">
+  <div class="dhead">
+    <div class="dtop">
+      <button class="ibtn" id="drawerClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="brand"><div class="lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H16a3.5 3.5 0 0 0 0-7H8a3.5 3.5 0 0 1 0-7h7.5"/></svg></div><div><b>Route Runner</b><span>Free · unlimited stops</span></div></div>
+  </div>
+  <div class="dlist" id="dlist"></div>
+  <div class="dfoot"><button class="bigbtn" id="createRoute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Create route</button></div>
+</aside>
+
+<div class="scrim ascrim" id="aScrim"></div>
+<div class="asheet" id="asheet" role="dialog" aria-modal="true"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
 <div class="toast" id="toast" role="status"></div>
 
 <script>/* @preserve
@@ -904,61 +981,82 @@ const NOMINATIM="https://nominatim.openstreetmap.org/search";
 const PICKUP={a:"Paper drop, 1749 Hanwell Rd",la:45.9281326,ln:-66.7200532};
 const DATA=[];
 const TAG={"402":"BNH3B402","403":"BNH3B403","CS":"Charters","PR":"Phillips / 101"};
+const GC=["#e8590c","#8b45d6","#0b8a9c","#d6336c","#2f9e44","#c77700","#1c6fd1","#5f3dc4"];
+const gcol=g=>GC[(g-1)%GC.length];
 const uid=()=>Math.random().toString(36).slice(2,9);
 function hav(a,b){const R=6371000,t=Math.PI/180,dl=(b.la-a.la)*t,dn=(b.ln-a.ln)*t;const x=Math.sin(dl/2)**2+Math.cos(a.la*t)*Math.cos(b.la*t)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
 const isDone=s=>s.items.every(i=>i.done);
 const hasPos=s=>typeof s.la==="number"&&typeof s.ln==="number";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const pdate=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
 
 /* ---------- ordering ---------- */
-function optimizeLocal(stops,from){
-  const done=stops.filter(isDone),todo=stops.filter(s=>!isDone(s)&&hasPos(s)),nopos=stops.filter(s=>!isDone(s)&&!hasPos(s));
-  if(todo.length<2)return [...done,...todo,...nopos];
-  const left=todo.slice(),p=[from];
+// Nearest-neighbour then 2-opt, by straight-line distance.
+function localOrder(pts,from){
+  if(pts.length<2)return pts.slice();
+  const left=pts.slice(),p=[from];
   while(left.length){let b=0,bd=Infinity,cur=p[p.length-1];left.forEach((s,i)=>{const d=hav(cur,s);if(d<bd){bd=d;b=i}});p.push(left.splice(b,1)[0])}
   const n=p.length,d=(i,j)=>hav(p[i],p[j]);
   for(let pass=0,imp=true;imp&&pass<80;pass++){imp=false;
     for(let i=1;i<n-1;i++)for(let j=i+1;j<n;j++){
       const delta=d(i-1,j)+(j+1<n?d(i,j+1):0)-d(i-1,i)-(j+1<n?d(j,j+1):0);
       if(delta<-0.5){const seg=p.slice(i,j+1).reverse();p.splice(i,seg.length,...seg);imp=true}}}
-  return [...done,...p.slice(1),...nopos];
+  return p.slice(1);
 }
-// Road-based ordering via the OSRM trip service; null if unavailable.
-async function optimizeRoad(stops,from){
-  const done=stops.filter(isDone),todo=stops.filter(s=>!isDone(s)&&hasPos(s)),nopos=stops.filter(s=>!isDone(s)&&!hasPos(s));
-  if(todo.length<2)return [...done,...todo,...nopos];
-  if(todo.length>98)return null;
-  const pts=[from,...todo],coords=pts.map(p=>p.ln.toFixed(6)+","+p.la.toFixed(6)).join(";");
+// Road-based order via the OSRM trip service; null if unavailable.
+async function roadOrder(pts,from){
+  if(pts.length<2)return pts.slice();
+  if(pts.length>98)return null;
+  const coords=[from,...pts].map(p=>p.ln.toFixed(6)+","+p.la.toFixed(6)).join(";");
   const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),20000);
   try{
     const res=await fetch(OSRM+"/trip/v1/driving/"+coords+"?source=first&destination=any&roundtrip=false&overview=false",{signal:ctl.signal});
     const j=await res.json();if(j.code!=="Ok")return null;
-    const order=[];j.waypoints.forEach((w,i)=>{if(i>0)order[w.waypoint_index]=todo[i-1]});
-    return [...done,...order.filter(Boolean),...nopos];
+    const order=[];j.waypoints.forEach((w,i)=>{if(i>0)order[w.waypoint_index]=pts[i-1]});
+    return order.filter(Boolean);
   }catch(e){return null}finally{clearTimeout(tm)}
 }
-function startAt(stops,first){const done=stops.filter(isDone),rest=stops.filter(s=>!isDone(s)&&s!==first);return [...done,first,...optimizeLocal(rest,first)]}
+// Circled groups go first, in the order they were drawn; anything not circled goes last.
+async function optimizeStops(stops,from,useRoad){
+  const done=stops.filter(isDone),todo=stops.filter(s=>!isDone(s)&&hasPos(s)),nopos=stops.filter(s=>!isDone(s)&&!hasPos(s));
+  const gs=[...new Set(todo.map(s=>s.g||0).filter(Boolean))].sort((a,b)=>a-b);
+  const buckets=[...gs.map(g=>todo.filter(s=>s.g===g)),todo.filter(s=>!s.g)].filter(b=>b.length);
+  let cur=from,seq=[],byRoad=useRoad;
+  for(const b of buckets){
+    let o=byRoad?await roadOrder(b,cur):null;
+    if(!o){byRoad=false;o=localOrder(b,cur)}
+    seq.push(...o);cur=o[o.length-1];
+  }
+  return {stops:[...done,...seq,...nopos],byRoad,groups:gs.length};
+}
+function startAt(stops,first){const done=stops.filter(isDone),rest=stops.filter(s=>!isDone(s)&&s!==first);
+  const pos=rest.filter(hasPos),nopos=rest.filter(s=>!hasPos(s));return [...done,first,...localOrder(pos,first),...nopos]}
 const F850=st=>st.find(s=>s.a==="850 Route 101");
 function seed(){
   const id="r"+Date.now();
   const stops=DATA.map(x=>({id:uid(),a:x.a,la:x.la,ln:x.ln,r:x.r,items:x.u.map(u=>({id:uid(),t:u[0],n:u[1],tj:!!u[2],done:false}))}));
   const f=F850(stops);
-  return {current:id,hide:false,routes:{[id]:{name:stops.length?"Oct 21 run":"My route",area:"NB, Canada",stops:f?startAt(stops,f):stops}}};
+  return {current:id,hide:false,routes:{[id]:{name:stops.length?"Oct 21 run":"My route",date:today(),area:"NB, Canada",stops:f?startAt(stops,f):stops}}};
 }
 let S;try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
 if(!S||!S.routes||!S.routes[S.current])S=seed();
+function fixDates(){Object.entries(S.routes).forEach(([id,r])=>{if(!r.date){const m=id.match(/^r(\d{12,})$/);const d=m?new Date(+m[1]):new Date();r.date=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}})}
+fixDates();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};save();
 const R=()=>S.routes[S.current];
 const $=id=>document.getElementById(id);
 const say=(id,t,err)=>{const m=$(id);m.className="msg"+(err?" err":"");m.textContent=t};
 let toastT=null;const toast=t=>{const e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove("on"),2600)};
-let sel=null,mapMode="next";
+let sel=null,mapMode="next",query="";
 
 const q=s=>{const a=(R().area||"").trim();return a&&!s.a.toLowerCase().includes(a.toLowerCase())?s.a+", "+a:s.a};
 const dest=s=>hasPos(s)?s.la+","+s.ln:q(s);
 const navUrl=s=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(dest(s))+"&travelmode=driving";
+const batchUrl=r=>{const p=r.stops.filter(s=>!isDone(s)).slice(0,10);return p.length?"https://www.google.com/maps/dir//"+p.map(s=>encodeURIComponent(dest(s))).join("/"):null};
 const fmt=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
-const dur=ms=>{const m=Math.round(ms/60000);return m<60?m+" min":Math.floor(m/60)+" h "+(m%60?String(m%60).padStart(2,"0")+" m":"")};
+const dur=ms=>{const m=Math.round(ms/60000);return m<60?m+"min":Math.floor(m/60)+"h"+(m%60?" "+(m%60)+"min":"")};
 const lastDone=r=>[...r.stops].reverse().find(s=>isDone(s)&&hasPos(s))||null;
+const started=r=>r.started||r.stops.some(s=>s.items.some(i=>i.done));
 
 /* ---------- road path (OSRM route) ---------- */
 let road={key:"",geo:null,legs:null,dist:0,pending:""},roadTimer=null;
@@ -983,7 +1081,6 @@ async function fetchRoad(){
   }catch(e){if(road.pending===key)road.pending="";return}
   render(true);
 }
-
 function etas(r){
   const m=new Map();const t0=Date.now();let t=t0,prev=lastDone(r),km=0;
   const useRoad=road.key===keyOf(pathPts(r))&&road.legs;let li=0;
@@ -1009,34 +1106,39 @@ const LAYERS={
 let base=null,baseName="",tileOk=0,tileBad=0;
 function setBase(name){
   if(base)map.removeLayer(base);baseName=name;base=LAYERS[name]().addTo(map);tileOk=0;tileBad=0;
-  $("map").classList.toggle("street",name!=="sat");$("layerBtn").setAttribute("aria-pressed",name==="sat");
+  $("map").classList.toggle("street",name!=="sat");
   base.on("tileload",()=>tileOk++);
   base.on("tileerror",()=>{tileBad++;if(name==="osm"&&tileOk===0&&tileBad>=4)setBase("esri")}); // fall back if OSM tiles are refused
 }
 setBase("osm");
-$("layerBtn").onclick=()=>setBase(baseName==="sat"?"osm":"sat");
+$("layerBtn").onclick=()=>{setBase(baseName==="sat"?"osm":"sat");toast(baseName==="sat"?"Satellite view":"Street map")};
 const lineLayer=L.layerGroup().addTo(map),pinLayer=L.layerGroup().addTo(map);
 let meMarker=null;
 L.marker([PICKUP.la,PICKUP.ln],{icon:L.divIcon({className:"",html:'<div class="drop"></div>',iconSize:[18,18],iconAnchor:[9,9]}),title:PICKUP.a,zIndexOffset:-500}).addTo(map);
 
+let drawing=false;
 function drawMap(){
   const r=R();lineLayer.clearLayers();pinLayer.clearLayers();
   const todo=r.stops.filter(s=>!isDone(s)&&hasPos(s)),pts=pathPts(r);
   const roadOk=road.key===keyOf(pts)&&road.geo;
-  if(todo.length){
+  if(todo.length&&!drawing){
     const ll=roadOk?road.geo:pts.map(p=>[p.la,p.ln]);
-    L.polyline(ll,{color:"#ffffff",weight:10,opacity:.9,interactive:false}).addTo(lineLayer);
-    L.polyline(ll,{color:"#1a62e0",weight:6,opacity:.95,dashArray:roadOk?null:"2 10",lineCap:"round",interactive:false}).addTo(lineLayer);
+    L.polyline(ll,{color:"#ffffff",weight:9,opacity:.9,interactive:false}).addTo(lineLayer);
+    L.polyline(ll,{color:"#2a6df4",weight:5,opacity:.95,dashArray:roadOk?null:"2 10",lineCap:"round",interactive:false}).addTo(lineLayer);
   }
   const idx=new Map(r.stops.map((s,i)=>[s.id,i+1]));
   const z=map.getZoom(),near=new Set(todo.slice(0,z>=16?999:z>=14?20:z>=12?6:3).map(s=>s.id));
   r.stops.forEach(s=>{if(!hasPos(s))return;
-    const dn=isDone(s),isNext=s===todo[0],isSel=s.id===sel;let html,h;
-    if(isSel||(!dn&&near.has(s.id))){html='<div class="pin'+(isSel?" sel":isNext?" next":"")+'">'+(dn?"✓":idx.get(s.id))+'</div>';h=30}
-    else if(dn){html='<div class="dot done"></div>';h=12}
-    else{html='<div class="dot"></div>';h=13}
-    const w=h===30?Math.max(30,String(idx.get(s.id)).length*8+18):h;
-    const m=L.marker([s.la,s.ln],{icon:L.divIcon({className:"",html,iconSize:[w,h],iconAnchor:[w/2,h/2]}),title:s.a,
+    const dn=isDone(s),isNext=s===todo[0],isSel=s.id===sel,col=s.g&&!dn?gcol(s.g):"#2a6df4";let html,w,h,ay;
+    if(drawing){
+      if(dn)return;
+      html='<div class="dot'+(s.g?" fill":"")+'" style="--gc:'+col+'"></div>';w=h=13;ay=6.5;
+    }else if(isSel||(!dn&&near.has(s.id))){
+      const lbl=dn?"✓":idx.get(s.id);w=Math.max(28,String(lbl).length*8+16);h=36;ay=36;
+      html='<div class="mk'+(isSel?" sel":dn?" done":isNext?" next":"")+'" style="--gc:'+col+'"><span>'+lbl+'</span><i></i></div>';
+    }else if(dn){html='<div class="dot done"></div>';w=h=12;ay=6}
+    else{html='<div class="dot" style="--gc:'+col+'"></div>';w=h=13;ay=6.5}
+    const m=L.marker([s.la,s.ln],{icon:L.divIcon({className:"",html,iconSize:[w,h],iconAnchor:[w/2,ay]}),title:s.a,interactive:!drawing,
       zIndexOffset:isSel?2000:isNext?1500:dn?-200:1000-idx.get(s.id)}).addTo(pinLayer);
     m.on("click",()=>{sel=s.id;setSheet("peek");render(true)});
   });
@@ -1044,44 +1146,46 @@ function drawMap(){
 map.on("zoomend",drawMap);
 map.on("dragstart",()=>{mapMode=null});
 map.on("contextmenu",e=>{
+  if(drawing)return;
   const s=sel&&R().stops.find(x=>x.id===sel);if(!s){toast("Open a stop first, then long-press to move its pin");return}
   if(!confirm("Move the pin for "+s.a+" here?"))return;
   s.la=+e.latlng.lat.toFixed(7);s.ln=+e.latlng.lng.toFixed(7);save();render(true);toast("Pin moved for "+s.a);
 });
-const pad=()=>({paddingTopLeft:[36,(parseInt(getComputedStyle(document.querySelector(".top")).paddingTop)||0)+80],paddingBottomRight:[70,sheetPx()+30]});
-function fitPts(pts,maxZoom){if(!pts.length)return;map.invalidateSize();map.fitBounds(L.latLngBounds(pts.map(p=>[p.la,p.ln])),{...pad(),maxZoom:maxZoom||17,animate:true})}
-function fitAll(){mapMode="all";const p=R().stops.filter(hasPos);fitPts(p.length?p:[PICKUP],14)}
+const topPad=()=>drawing?document.querySelector(".dtopbar").getBoundingClientRect().bottom+28:(parseInt(getComputedStyle(document.querySelector(".topl")).top)||0)+60;
+function fitPts(pts,maxZoom,bottom){if(!pts.length)return;map.invalidateSize();
+  map.fitBounds(L.latLngBounds(pts.map(p=>[p.la,p.ln])),{paddingTopLeft:[30,topPad()],paddingBottomRight:[76,(bottom??sheetPx())+24],maxZoom:maxZoom||17,animate:true})}
+function fitAll(bottom){mapMode="all";const p=R().stops.filter(s=>hasPos(s)&&(!drawing||!isDone(s)));fitPts(p.length?p:[PICKUP],15,bottom)}
 function fitNext(){mapMode="next";const l=lastDone(R()),t=R().stops.filter(s=>!isDone(s)&&hasPos(s)).slice(0,5);const p=t.length?[...(l?[l]:[]),...t]:R().stops.filter(hasPos);fitPts(p.length?p:[PICKUP],16)}
 $("fitAll").onclick=()=>mapMode==="all"?fitNext():fitAll();
 function centerOn(s){if(!hasPos(s))return;mapMode=null;const z=Math.max(map.getZoom(),16);
   const pt=map.project([s.la,s.ln],z).add([0,(sheetPx()-120)/2]);map.flyTo(map.unproject(pt,z),z,{duration:.6})}
-$("locate").onclick=()=>{
-  if(!navigator.geolocation){toast("Location isn't available in this browser");return}
-  navigator.geolocation.getCurrentPosition(p=>{const ll=[p.coords.latitude,p.coords.longitude];
+function getPos(ok,bad){
+  if(!navigator.geolocation){bad();return}
+  navigator.geolocation.getCurrentPosition(p=>ok({la:p.coords.latitude,ln:p.coords.longitude}),bad,{enableHighAccuracy:true,timeout:10000});
+}
+$("locate").onclick=()=>getPos(p=>{const ll=[p.la,p.ln];
     if(meMarker)meMarker.setLatLng(ll);else meMarker=L.marker(ll,{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[20,20],iconAnchor:[10,10]}),zIndexOffset:3000}).addTo(map);
     mapMode=null;map.flyTo(ll,Math.max(map.getZoom(),15),{duration:.6})},
-    ()=>toast("Couldn't get your location. Allow location for this site in Settings."),{enableHighAccuracy:true,timeout:10000});
-};
+  ()=>toast("Couldn't get your location. Allow location for this site in Settings."));
 
 /* ---------- bottom sheet ---------- */
 const sheet=$("sheet"),grab=$("grab");let sheetState="peek";
 const vh=()=>window.innerHeight;
 function peekPx(){
-  const g=grab.offsetHeight,card=$("nextBox").firstElementChild;
-  let h=g+(card?Math.min(card.offsetHeight,vh()*.5)+14:0);
+  const g=grab.offsetHeight,top=$("topBox").firstElementChild;
+  const h=g+6+(top?Math.min(top.offsetHeight,vh()*.5)+10:0);
   return Math.max(150,Math.min(h,vh()*.62));
 }
-const snaps=()=>({peek:peekPx(),half:Math.round(vh()*.55),full:vh()-(parseInt(getComputedStyle(document.querySelector(".top")).paddingTop)||0)-8});
+const snaps=()=>({peek:peekPx(),half:Math.round(vh()*.58),full:vh()-(parseInt(getComputedStyle(document.documentElement).getPropertyValue("--top"))||0)-(window.visualViewport?0:0)-12});
 let curPx=0;const sheetPx=()=>curPx;
 function applySheet(px){curPx=px;document.documentElement.style.setProperty("--sheetH",px+"px");document.body.classList.toggle("sheet-full",px>vh()*.8)}
-function setSheet(st){sheetState=st;const s=snaps();applySheet(st==="half"?Math.max(s.half,s.peek):s[st]);if(st!=="full")$("sbody").scrollTop=0}
+function setSheet(st){sheetState=st;const s=snaps();applySheet(st==="half"?Math.max(s.half,s.peek):s[st]);if(st==="peek")$("sbody").scrollTop=0}
 let drag=null;
-grab.addEventListener("pointerdown",e=>{drag={y:e.clientY,h:curPx,moved:0};sheet.classList.add("dragging");grab.setPointerCapture(e.pointerId)});
+grab.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;drag={y:e.clientY,h:curPx,moved:0};sheet.classList.add("dragging");document.body.classList.add("dragging-any");grab.setPointerCapture(e.pointerId)});
 grab.addEventListener("pointermove",e=>{if(!drag)return;const dy=drag.y-e.clientY;drag.moved=Math.max(drag.moved,Math.abs(dy));const s=snaps();applySheet(Math.max(110,Math.min(s.full,drag.h+dy)))});
-const endDrag=()=>{if(!drag)return;sheet.classList.remove("dragging");const s=snaps(),h=curPx;
+const endDrag=()=>{if(!drag)return;sheet.classList.remove("dragging");document.body.classList.remove("dragging-any");const s=snaps(),h=curPx;
   if(drag.moved<6){setSheet(sheetState==="peek"?"half":sheetState==="half"?"full":"peek")}
   else{const opts=Object.entries({peek:s.peek,half:Math.max(s.half,s.peek),full:s.full});const v=h-drag.h;
-    // favour the direction of the flick
     let best=opts.reduce((a,b)=>Math.abs(b[1]-h)<Math.abs(a[1]-h)?b:a);
     if(Math.abs(v)>40){const dir=Math.sign(v),cand=opts.filter(o=>dir>0?o[1]>drag.h+10:o[1]<drag.h-10);if(cand.length)best=cand.reduce((a,b)=>Math.abs(b[1]-h)<Math.abs(a[1]-h)?b:a)}
     setSheet(best[0])}
@@ -1089,125 +1193,273 @@ const endDrag=()=>{if(!drag)return;sheet.classList.remove("dragging");const s=sn
 grab.addEventListener("pointerup",endDrag);grab.addEventListener("pointercancel",endDrag);
 window.addEventListener("resize",()=>{setSheet(sheetState);map.invalidateSize()});
 
+/* ---------- action sheet ---------- */
+const ICO={
+  draw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4c5 0 8 2.2 8 5.5S16.4 15 12 15c-4.5 0-8-1.8-8-5 0-2 1.5-3.4 3.6-4.3"/><path d="M8 15c-1 1.5-1.2 3.4.2 5"/></svg>',
+  opt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h-4M6 22v-4h4"/></svg>',
+  gps:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 3L13.5 21 21 3Z"/></svg>',
+  maps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 22s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  add:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  reset:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>',
+  save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>',
+  load:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+};
+function actionSheet(title,items){
+  const a=$("asheet");a.innerHTML="";
+  if(title){const h=document.createElement("h4");h.textContent=title;a.appendChild(h)}
+  items.filter(Boolean).forEach(it=>{const b=document.createElement("button");b.className="aitem"+(it.danger?" danger":"");
+    b.innerHTML=(ICO[it.icon]||"")+"<span></span>";const sp=b.querySelector("span");sp.textContent=it.label;
+    if(it.sub){const sm=document.createElement("small");sm.textContent=it.sub;sp.appendChild(sm)}
+    b.onclick=()=>{closeSheet();it.fn()};a.appendChild(b)});
+  const c=document.createElement("button");c.className="aitem cancel";c.textContent="Cancel";c.onclick=closeSheet;a.appendChild(c);
+  a.classList.add("on");$("aScrim").classList.add("on");
+}
+function closeSheet(){$("asheet").classList.remove("on");$("aScrim").classList.remove("on")}
+$("aScrim").onclick=closeSheet;
+
+/* ---------- routes drawer ---------- */
+function openDrawer(){renderDrawer();$("drawer").classList.add("on");$("drawerScrim").classList.add("on")}
+function closeDrawer(){$("drawer").classList.remove("on");$("drawerScrim").classList.remove("on")}
+$("menuBtn").onclick=openDrawer;$("routeChip").onclick=openDrawer;$("drawerClose").onclick=closeDrawer;$("drawerScrim").onclick=closeDrawer;
+function renderDrawer(){
+  const L2=$("dlist");L2.innerHTML="";
+  const list=Object.entries(S.routes).sort((a,b)=>b[1].date.localeCompare(a[1].date)||b[0].localeCompare(a[0]));
+  let mon="";
+  list.forEach(([id,r])=>{
+    const d=pdate(r.date),mk=d.toLocaleDateString([],{month:"long",year:"numeric"});
+    if(mk!==mon){mon=mk;const h=document.createElement("div");h.className="mon";h.textContent=mk;L2.appendChild(h)}
+    const row=document.createElement("div");row.className="ritem"+(id===S.current?" on":"");
+    row.innerHTML='<button class="go"><span class="l1"><span class="dt"></span><span class="wd"></span></span><span class="l2"></span></button><button class="more" aria-label="Route options"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>';
+    row.querySelector(".dt").textContent=d.toLocaleDateString([],{month:"short",day:"2-digit"});
+    row.querySelector(".wd").textContent=d.toLocaleDateString([],{weekday:"long"});
+    const dn=r.stops.filter(isDone).length;
+    row.querySelector(".l2").textContent=(r.name||"Untitled")+" · "+(r.stops.length?dn+"/"+r.stops.length+" stops":"no stops");
+    row.querySelector(".go").onclick=()=>{S.current=id;sel=null;save();closeDrawer();render()};
+    row.querySelector(".more").onclick=()=>actionSheet(r.name||"Route",[
+      {icon:"edit",label:"Rename",fn:()=>{const n=prompt("Route name",r.name||"");if(n!==null){r.name=n.trim()||"Untitled";save();render(true);renderDrawer()}}},
+      {icon:"copy",label:"Copy for today",sub:"Same stops and order, nothing checked",fn:()=>{const nid="r"+Date.now();
+        S.routes[nid]={...JSON.parse(JSON.stringify(r)),name:r.name,date:today(),started:false};S.routes[nid].stops.forEach(s=>{s.id=uid();s.items.forEach(i=>{i.id=uid();i.done=false})});
+        S.current=nid;sel=null;save();closeDrawer();render();toast("Copied for today")}},
+      {icon:"trash",label:"Delete route",danger:true,fn:()=>{if(!confirm("Delete "+(r.name||"this route")+"?"))return;delete S.routes[id];
+        if(!Object.keys(S.routes).length){const nid="r"+Date.now();S.routes[nid]={name:"My route",date:today(),area:"NB, Canada",stops:[]}}
+        if(!S.routes[S.current])S.current=Object.keys(S.routes)[0];sel=null;save();render();renderDrawer()}}
+    ]);
+    L2.appendChild(row);
+  });
+}
+$("createRoute").onclick=()=>{const n=prompt("Name for the new route","Run");if(n===null)return;const id="r"+Date.now();
+  S.routes[id]={name:n.trim()||"Untitled",date:today(),area:R().area||"NB, Canada",stops:[]};S.current=id;sel=null;save();closeDrawer();render();
+  $("addBox").open=true;setSheet("full");setTimeout(()=>$("paste").focus(),350)};
+
 /* ---------- UI ---------- */
-const ICON_NAV='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 3L13.5 21 21 3Z"/></svg>';
 const ICON_OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+function stopCard(r,cur,first,E){
+  const i=r.stops.indexOf(cur),d=document.createElement("div");d.className="card";
+  d.innerHTML='<div class="k"><span class="lbl"></span><span class="eta"></span></div><h2></h2><p class="note1"></p><div class="units"></div><div class="cta"><a target="_blank" rel="noopener"></a><button class="dl"></button></div><div class="minor"></div>';
+  d.querySelector(".lbl").textContent=(cur===first&&started(r)?"Next · ":"")+"Stop "+(i+1)+(cur.r&&TAG[cur.r]?" · "+TAG[cur.r]:"");
+  const et=E.m.get(cur.id);d.querySelector(".eta").textContent=et?fmt(et):isDone(cur)?"Delivered":"";
+  d.querySelector("h2").textContent=cur.a;
+  const u=d.querySelector(".units"),n1=d.querySelector(".note1");
+  if(cur.items.length===1){const it=cur.items[0];
+    if(it.tj){const g=document.createElement("span");g.className="tj";g.textContent="Telegraph";n1.appendChild(g)}
+    if(it.n||it.t)n1.append([it.t,it.n].filter(Boolean).join(" · "));
+    if(!n1.childNodes.length)n1.remove();u.remove();
+  }else{n1.textContent=cur.items.length+" papers";if(cur.items.length>3)u.classList.add("grid");
+    cur.items.forEach(it=>{
+      const bt=document.createElement("button");bt.className="unit"+(it.done?" on":"");bt.setAttribute("aria-pressed",it.done);
+      bt.innerHTML='<span class="box"></span><span><span class="t"></span><span class="n"></span></span>';
+      bt.querySelector(".box").textContent=it.done?"✓":"";
+      const t=bt.querySelector(".t");t.textContent=it.t||"Paper";if(it.tj){const g=document.createElement("span");g.className="tj";g.textContent="TJ";t.appendChild(g)}
+      const n=bt.querySelector(".n");if(it.n)n.textContent=it.n;else n.remove();
+      bt.onclick=()=>{it.done=!it.done;r.started=true;save();if(isDone(cur)&&sel===cur.id)sel=null;render(true)};
+      u.appendChild(bt)})}
+  const nav=d.querySelector("a");nav.href=navUrl(cur);nav.innerHTML=ICO.gps+"Navigate";
+  const dl=d.querySelector(".dl"),dn=isDone(cur);
+  if(dn){dl.textContent="Undo";dl.classList.add("undo")}else dl.innerHTML=ICON_OK+(cur.items.length>1?"All done":"Delivered");
+  dl.onclick=()=>{const v=!isDone(cur);cur.items.forEach(x=>x.done=v);r.started=true;if(v&&sel===cur.id)sel=null;save();if(v)toast("Delivered · "+cur.a);render(true)};
+  const mn=d.querySelector(".minor");
+  const addMinor=(txt,fn)=>{const bb=document.createElement("button");bb.textContent=txt;bb.onclick=fn;mn.appendChild(bb)};
+  if(sel)addMinor("‹ Back",()=>{sel=null;render(true)});
+  if(!dn){
+    if(i>0)addMinor("Move earlier",()=>{[r.stops[i-1],r.stops[i]]=[r.stops[i],r.stops[i-1]];sel=cur.id;save();render(true)});
+    if(i<r.stops.length-1)addMinor("Move later",()=>{[r.stops[i+1],r.stops[i]]=[r.stops[i],r.stops[i+1]];sel=cur.id;save();render(true)});
+    if(cur!==first&&hasPos(cur))addMinor("Start here",()=>{r.stops=startAt(r.stops,cur);sel=null;save();render();toast("Route now starts at "+cur.a)});
+  }
+  if(!mn.children.length)mn.remove();
+  return d;
+}
+function planBox(r){
+  const d=document.createElement("div");d.className="planbox";
+  const groups=new Set(r.stops.filter(s=>!isDone(s)&&s.g).map(s=>s.g)).size;
+  const main=document.createElement("button");main.className="bigbtn";
+  if(r.optimized){main.innerHTML=ICO.gps+"Start route";main.onclick=()=>{r.started=true;save();render()}}
+  else{main.innerHTML=ICO.opt+"Optimize route";main.onclick=()=>optimizeNow()}
+  d.appendChild(main);
+  const row=document.createElement("div");row.className="row2";
+  const b1=document.createElement("button");b1.className="btn2";b1.innerHTML=ICO.draw+(groups?"Edit groups ("+groups+")":"Draw to order");b1.onclick=enterDraw;
+  const b2=document.createElement("button");b2.className="btn2";
+  if(r.optimized){b2.innerHTML=ICO.opt+"Re-optimize";b2.onclick=()=>optimizeNow()}
+  else{b2.innerHTML=ICO.gps+"Start as is";b2.onclick=()=>{r.started=true;save();render()}}
+  row.append(b1,b2);d.appendChild(row);
+  return d;
+}
 function render(keepView){
   const r=R();
-  const rs=$("routeSel");rs.innerHTML="";
-  Object.entries(S.routes).forEach(([id,x])=>{const o=document.createElement("option");o.value=id;o.textContent=x.name||"Untitled";if(id===S.current)o.selected=true;rs.appendChild(o)});
-  const nw=document.createElement("option");nw.value="__new";nw.textContent="+ New route";rs.appendChild(nw);
-  $("rname").value=r.name||"";$("area").value=r.area||"";
   const items=r.stops.flatMap(s=>s.items),leftP=items.filter(i=>!i.done).length,leftS=r.stops.filter(s=>!isDone(s)).length;
   const E=etas(r);
-  $("rTitle").textContent=r.name||"Untitled";
-  $("rSub").textContent=r.stops.length?(r.stops.length-leftS)+" of "+r.stops.length+" stops done"+(leftS?" · "+leftP+" papers left":""):"No stops yet";
-  $("sumLeft").innerHTML="";const b=document.createElement("b");b.textContent=leftS;$("sumLeft").append(b,leftS===1?"stop left":"stops left");
-  $("sumRight").innerHTML="";
-  if(leftS){const bb=document.createElement("b");bb.textContent="Done "+fmt(E.end);$("sumRight").append(bb," · "+dur(E.left)+(E.km?" · "+Math.round(E.km)+" km":""))}
+  $("chipName").textContent=r.name||"Untitled";
+  $("chipDate").textContent=pdate(r.date).toLocaleDateString([],{month:"short",day:"numeric"});
+  $("rname").value=r.name||"";$("area").value=r.area||"";
+  $("h1").textContent=!r.stops.length?"No stops yet":leftS?dur(E.left)+" · "+leftS+(leftS===1?" stop":" stops"):"All "+r.stops.length+" stops delivered";
+  $("h2").textContent=leftS?"Done ~"+fmt(E.end)+(E.km?" · "+Math.round(E.km)+" km":"")+" · "+leftP+(leftP===1?" paper":" papers"):"";
   $("barFill").style.width=items.length?Math.round((items.length-leftP)/items.length*100)+"%":"0%";
   if(sel&&!r.stops.find(s=>s.id===sel))sel=null;
   const first=r.stops.find(s=>!isDone(s));
-  const cur=(sel&&r.stops.find(s=>s.id===sel))||first;
-  const box=$("nextBox");box.innerHTML="";
-  $("actions").style.display=r.stops.length?"":"none";
-  if(cur){
-    const i=r.stops.indexOf(cur),d=document.createElement("div");d.className="card";
-    d.innerHTML='<div class="k"><span class="lbl"></span><span class="eta"></span></div><h2></h2><p class="note1"></p><div class="units"></div><div class="cta"><a target="_blank" rel="noopener"></a><button class="dl"></button></div><div class="minor"></div>';
-    d.querySelector(".lbl").textContent=(cur===first?"Next · ":"")+"Stop "+(i+1)+(cur.r&&TAG[cur.r]?" · "+TAG[cur.r]:"");
-    const et=E.m.get(cur.id);d.querySelector(".eta").textContent=et?"ETA "+fmt(et):isDone(cur)?"Delivered":"";
-    d.querySelector("h2").textContent=cur.a;
-    const u=d.querySelector(".units"),n1=d.querySelector(".note1");
-    if(cur.items.length===1){const it=cur.items[0];
-      if(it.tj){const g=document.createElement("span");g.className="tj";g.textContent="Telegraph";n1.appendChild(g)}
-      if(it.n||it.t)n1.append([it.t,it.n].filter(Boolean).join(" · "));
-      if(!n1.childNodes.length)n1.remove();u.remove();
-    }else{n1.textContent=cur.items.length+" papers";if(cur.items.length>3)u.classList.add("grid");
-      cur.items.forEach(it=>{
-        const bt=document.createElement("button");bt.className="unit"+(it.done?" on":"");bt.setAttribute("aria-pressed",it.done);
-        bt.innerHTML='<span class="box"></span><span><span class="t"></span><span class="n"></span></span>';
-        bt.querySelector(".box").textContent=it.done?"✓":"";
-        const t=bt.querySelector(".t");t.textContent=it.t||"Paper";if(it.tj){const g=document.createElement("span");g.className="tj";g.textContent="TJ";t.appendChild(g)}
-        const n=bt.querySelector(".n");if(it.n)n.textContent=it.n;else n.remove();
-        bt.onclick=()=>{it.done=!it.done;save();if(isDone(cur)&&sel===cur.id)sel=null;render(true)};
-        u.appendChild(bt)})}
-    const nav=d.querySelector("a");nav.href=navUrl(cur);nav.innerHTML=ICON_NAV+"Navigate";
-    const dl=d.querySelector(".dl"),dn=isDone(cur);
-    if(dn){dl.textContent="Undo";dl.classList.add("undo")}else dl.innerHTML=ICON_OK+(cur.items.length>1?"All done":"Delivered");
-    dl.onclick=()=>{const v=!isDone(cur);cur.items.forEach(x=>x.done=v);if(v&&sel===cur.id)sel=null;save();if(v)toast("Delivered · "+cur.a);render(true)};
-    const mn=d.querySelector(".minor");
-    const addMinor=(txt,fn)=>{const bb=document.createElement("button");bb.textContent=txt;bb.onclick=fn;mn.appendChild(bb)};
-    if(sel)addMinor("‹ Back to next",()=>{sel=null;render(true)});
-    if(!dn){
-      if(i>0)addMinor("Move earlier",()=>{[r.stops[i-1],r.stops[i]]=[r.stops[i],r.stops[i-1]];sel=cur.id;save();render(true)});
-      if(i<r.stops.length-1)addMinor("Move later",()=>{[r.stops[i+1],r.stops[i]]=[r.stops[i],r.stops[i+1]];sel=cur.id;save();render(true)});
-      if(cur!==first&&hasPos(cur))addMinor("Start here",()=>{r.stops=startAt(r.stops,cur);sel=null;save();render();toast("Route now starts at "+cur.a)});
-    }
-    if(!mn.children.length)mn.remove();
-    box.appendChild(d);
-  }else if(r.stops.length){const d=document.createElement("div");d.className="allset";d.textContent="Route done 🎉";box.appendChild(d)}
-  else{
+  const box=$("topBox");box.innerHTML="";
+  if(sel)box.appendChild(stopCard(r,r.stops.find(s=>s.id===sel),first,E));
+  else if(!r.stops.length){
     const d=document.createElement("div");d.className="empty";
-    d.innerHTML='<h2>No stops yet</h2><p>Paste your addresses, or load a route backup file.</p><div class="row"><button class="pri" id="eAdd">Add stops</button><button id="eLoad">Load backup</button></div>';
+    d.innerHTML='<h2>Add your stops</h2><p>Paste the addresses from your delivery sheet. Each one gets a pin on the map.</p><button class="bigbtn" id="eAdd">'+ICO.add+'Add stops</button><div class="row2"><button class="btn2" id="eLoad">'+ICO.load+'Load backup</button><button class="btn2" id="eRoutes">Other routes</button></div>';
     box.appendChild(d);
     d.querySelector("#eAdd").onclick=()=>{$("addBox").open=true;setSheet("full");setTimeout(()=>$("paste").focus(),300)};
     d.querySelector("#eLoad").onclick=()=>$("importFile").click();
+    d.querySelector("#eRoutes").onclick=openDrawer;
   }
-  const pend=r.stops.filter(s=>!isDone(s)).slice(0,10),ob=$("openBatch");
-  if(pend.length){ob.style.visibility="";ob.href="https://www.google.com/maps/dir//"+pend.map(s=>encodeURIComponent(dest(s))).join("/")}else ob.style.visibility="hidden";
+  else if(!first){const d=document.createElement("div");d.className="allset";d.textContent="Route done 🎉";box.appendChild(d)}
+  else if(!started(r))box.appendChild(planBox(r));
+  else box.appendChild(stopCard(r,first,first,E));
+
   $("toggleHide").textContent=S.hide?"Show delivered":"Hide delivered";
   $("toggleHide").style.display=r.stops.length?"":"none";
-  $("listTitle").textContent=r.stops.length?"All stops ("+r.stops.length+")":"";
-  const list=$("list");list.innerHTML="";
+  const qq=query.trim().toLowerCase();
+  $("listTitle").textContent=!r.stops.length?"":qq?"Search results":"All stops · "+r.stops.length;
+  const list=$("list");list.innerHTML="";let shown=0;
   r.stops.forEach((s,i)=>{
     const dn=isDone(s),part=!dn&&s.items.some(x=>x.done);
-    if(S.hide&&dn)return;
-    const li=document.createElement("li");li.className="stop"+(dn?" done":"")+(part?" part":"")+(s===first?" next":"")+(sel===s.id?" sel":"");
+    if(S.hide&&dn&&!qq)return;
+    if(qq&&!(s.a+" "+s.items.map(x=>x.t+" "+x.n).join(" ")).toLowerCase().includes(qq))return;
+    shown++;
+    const li=document.createElement("li");li.className="stop"+(dn?" done":"")+(part?" part":"")+(s===first&&started(r)?" next":"")+(sel===s.id?" sel":"");
+    if(s.g&&!dn)li.style.setProperty("--gc",gcol(s.g));
     li.innerHTML='<button class="badge"></button><button class="body2"><span class="a"></span><span class="m"></span></button><span class="time"></span>';
     const bd=li.querySelector(".badge");bd.textContent=dn?"✓":String(i+1);
     bd.setAttribute("aria-label",(dn?"Mark not delivered: ":"Mark delivered: ")+s.a);
-    bd.onclick=()=>{const v=!dn;s.items.forEach(x=>x.done=v);if(v&&sel===s.id)sel=null;save();render(true)};
+    bd.onclick=()=>{const v=!dn;s.items.forEach(x=>x.done=v);r.started=true;if(v&&sel===s.id)sel=null;save();render(true)};
     li.querySelector(".a").textContent=s.a+(hasPos(s)?"":" (no pin)");
-    const m=li.querySelector(".m"),sm=summaryOf(s);if(sm)m.textContent=sm;else m.remove();
+    const m=li.querySelector(".m"),sm=summaryOf(s);
+    if(s.g&&!dn){const t=document.createElement("span");t.className="gtag";t.style.setProperty("--gc",gcol(s.g));m.appendChild(t);m.append("Group "+s.g+(sm?" · "+sm:""))}
+    else if(sm)m.textContent=sm;else m.remove();
     const et=E.m.get(s.id);li.querySelector(".time").textContent=dn?"":et?fmt(et):"";
     li.querySelector(".body2").onclick=()=>{sel=s.id;render(true);setSheet("peek");setTimeout(()=>centerOn(s),280)};
     list.appendChild(li)});
+  if(qq&&!shown){const li=document.createElement("li");li.className="stop";li.innerHTML='<span class="m">No stops match.</span>';list.appendChild(li)}
   drawMap();
   if(sheetState==="peek")setSheet("peek");
   if(!keepView)fitNext();else if(mapMode==="next"&&!sel)fitNext();
   scheduleRoad();
 }
 
+/* ---------- optimize ---------- */
+let optimizing=false;
 async function runOptimize(from,label){
-  const r=R(),btns=[$("optimize"),$("optGps")];btns.forEach(b=>b.disabled=true);
-  say("optMsg","Planning the fastest route by road…");
-  const byRoad=await optimizeRoad(r.stops,from);
-  r.stops=byRoad||optimizeLocal(r.stops,from);sel=null;save();render();
-  btns.forEach(b=>b.disabled=false);
-  say("optMsg",byRoad?"Optimized by road from "+label+".":"Routing service didn't answer, so this used straight-line distance from "+label+".",!byRoad);
+  if(optimizing)return;optimizing=true;
+  const r=R();document.querySelectorAll("#topBox .bigbtn,#dGo").forEach(b=>b.disabled=true);
+  toast("Planning the fastest route…");
+  const res=await optimizeStops(r.stops,from,true);
+  r.stops=res.stops;r.optimized=true;sel=null;save();optimizing=false;render();
+  const gtxt=res.groups?" with "+res.groups+(res.groups===1?" group":" groups")+" first":"";
+  say("optMsg",res.byRoad?"Optimized by road from "+label+gtxt+".":"Routing service didn't answer, so this used straight-line distance from "+label+gtxt+".",!res.byRoad);
+  toast("Route optimized");
 }
-$("optimize").onclick=()=>{const last=lastDone(R());runOptimize(last||PICKUP,last?last.a:"the paper drop")};
-$("optGps").onclick=()=>{
-  if(!navigator.geolocation){say("optMsg","Location isn't available here. Use Optimize instead.",1);return}
-  say("optMsg","Getting your location…");
-  navigator.geolocation.getCurrentPosition(p=>runOptimize({la:p.coords.latitude,ln:p.coords.longitude},"your location"),
-    ()=>say("optMsg","Couldn't get your location. Use Optimize, which plans from your last delivered stop.",1),{enableHighAccuracy:true,timeout:10000});
+function optimizeNow(){const last=lastDone(R());runOptimize(last||PICKUP,last?last.a:"the paper drop")}
+function optimizeFromGps(){toast("Getting your location…");getPos(p=>runOptimize(p,"your location"),()=>toast("Couldn't get your location. Use Optimize instead."))}
+
+/* ---------- draw-to-order ---------- */
+const dsvg=$("drawSvg"),NS="http://www.w3.org/2000/svg";let lasso=null,panMode=false;
+function enterDraw(){
+  const todo=R().stops.filter(s=>!isDone(s)&&hasPos(s));if(todo.length<2){toast("Need at least 2 stops left to order");return}
+  drawing=true;sel=null;panMode=false;document.body.classList.add("drawing");document.body.classList.remove("panmode");
+  map.dragging.disable();map.touchZoom.disable();map.doubleClickZoom.disable();map.scrollWheelZoom.disable();
+  renderDraw();drawMap();
+  requestAnimationFrame(()=>fitAll($("dpanel").offsetHeight));
+}
+function exitDraw(){
+  drawing=false;document.body.classList.remove("drawing","panmode");dsvg.innerHTML="";
+  map.dragging.enable();map.touchZoom.enable();map.doubleClickZoom.enable();map.scrollWheelZoom.enable();
+  render(true);
+}
+function groupsOf(){const r=R(),m=new Map();r.stops.forEach(s=>{if(s.g&&!isDone(s))m.set(s.g,(m.get(s.g)||0)+1)});return [...m.entries()].sort((a,b)=>a[0]-b[0])}
+function renderDraw(){
+  const gs=groupsOf(),box=$("groups");box.innerHTML="";
+  if(!gs.length){const h=document.createElement("span");h.className="hint";h.textContent="No groups yet. Stops you don't circle go last.";box.appendChild(h)}
+  gs.forEach(([g,n],i)=>{const c=document.createElement("span");c.className="gchip";c.style.setProperty("--gc",gcol(g));c.innerHTML="<i></i>";c.append((i+1)+". "+n+(n===1?" stop":" stops"));box.appendChild(c)});
+  const left=R().stops.filter(s=>!isDone(s)&&hasPos(s)&&!s.g).length;
+  $("drawTitle").textContent=gs.length?"Now circle group "+(gs.length+1):"Circle the stops to do first";
+  $("drawSub").textContent=gs.length?left+" stops not in a group yet. They'll go last.":"Draw a loop around a group of stops with your finger.";
+  $("dGo").disabled=!gs.length;
+  document.documentElement.style.setProperty("--dpH",$("dpanel").offsetHeight+"px");
+}
+function inPoly(x,y,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
+const dl=$("drawLayer");
+dl.addEventListener("pointerdown",e=>{if(!drawing||panMode)return;dl.setPointerCapture(e.pointerId);
+  const g=groupsOf(),next=(g.length?g[g.length-1][0]:0)+1;
+  lasso={pts:[[e.clientX,e.clientY]],col:gcol(next),g:next,el:document.createElementNS(NS,"path")};
+  lasso.el.setAttribute("fill",lasso.col);lasso.el.setAttribute("fill-opacity",".14");lasso.el.setAttribute("stroke",lasso.col);
+  lasso.el.setAttribute("stroke-width","4");lasso.el.setAttribute("stroke-linejoin","round");lasso.el.setAttribute("stroke-linecap","round");
+  dsvg.innerHTML="";dsvg.appendChild(lasso.el)});
+dl.addEventListener("pointermove",e=>{if(!lasso)return;const p=lasso.pts,l=p[p.length-1];
+  if(Math.hypot(e.clientX-l[0],e.clientY-l[1])<3)return;p.push([e.clientX,e.clientY]);
+  lasso.el.setAttribute("d","M"+p.map(q=>q.join(",")).join("L"))});
+const endLasso=()=>{if(!lasso)return;const L0=lasso;lasso=null;
+  L0.el.setAttribute("d","M"+L0.pts.map(q=>q.join(",")).join("L")+"Z");
+  const rect=$("map").getBoundingClientRect();
+  const hit=L0.pts.length<6?[]:R().stops.filter(s=>!isDone(s)&&hasPos(s)&&(()=>{const p=map.latLngToContainerPoint([s.la,s.ln]);return inPoly(p.x+rect.left,p.y+rect.top,L0.pts)})());
+  setTimeout(()=>{if(dsvg.contains(L0.el))L0.el.remove()},450);
+  if(!hit.length){toast("No stops inside. Draw a loop around the pins.");return}
+  hit.forEach(s=>s.g=L0.g);save();drawMap();renderDraw();
+  toast("Group "+groupsOf().length+": "+hit.length+(hit.length===1?" stop":" stops"));
 };
-function newRoute(){const n=prompt("Name for the new route","Run");if(n===null){render(true);return}const id="r"+Date.now();S.routes[id]={name:n.trim()||"Untitled",area:R().area||"NB, Canada",stops:[]};S.current=id;sel=null;save();render()}
-$("routeSel").onchange=e=>{if(e.target.value==="__new")return newRoute();S.current=e.target.value;sel=null;save();render()};
-$("newRoute").onclick=newRoute;
+dl.addEventListener("pointerup",endLasso);dl.addEventListener("pointercancel",endLasso);
+$("panBtn").onclick=()=>{panMode=!panMode;document.body.classList.toggle("panmode",panMode);$("panBtn").setAttribute("aria-pressed",panMode);
+  if(panMode){map.dragging.enable();map.touchZoom.enable();toast("Move the map, then tap the hand again to draw")}else{map.dragging.disable();map.touchZoom.disable()}};
+$("dUndo").onclick=()=>{const g=groupsOf();if(!g.length)return;const last=g[g.length-1][0];R().stops.forEach(s=>{if(s.g===last)delete s.g});save();drawMap();renderDraw()};
+$("dClear").onclick=()=>{R().stops.forEach(s=>delete s.g);save();drawMap();renderDraw()};
+$("dCancel").onclick=exitDraw;
+$("dGo").onclick=()=>{exitDraw();optimizeNow()};
+
+/* ---------- header buttons ---------- */
+$("searchBtn").onclick=()=>{const on=!$("searchRow").classList.contains("on");$("searchRow").classList.toggle("on",on);
+  if(on){setSheet("full");setTimeout(()=>$("searchIn").focus(),300)}else{query="";$("searchIn").value="";render(true)}};
+$("searchIn").oninput=e=>{query=e.target.value;render(true)};
+$("moreBtn").onclick=()=>{const r=R(),hasG=r.stops.some(s=>s.g&&!isDone(s)),url=batchUrl(r);
+  actionSheet(null,[
+    r.stops.length&&{icon:"opt",label:"Optimize route",sub:"From your last delivered stop, by road",fn:optimizeNow},
+    r.stops.length&&{icon:"draw",label:"Draw to order stops",sub:"Circle groups of stops to do first",fn:enterDraw},
+    r.stops.length&&{icon:"gps",label:"Optimize from my location",fn:optimizeFromGps},
+    hasG&&{icon:"x",label:"Clear drawn groups",fn:()=>{r.stops.forEach(s=>delete s.g);save();render(true);toast("Groups cleared")}},
+    url&&{icon:"maps",label:"Open next 10 stops in Google Maps",fn:()=>window.open(url,"_blank")},
+    {icon:"add",label:"Add stops",fn:()=>{$("addBox").open=true;setSheet("full");setTimeout(()=>{$("addBox").scrollIntoView({block:"start"});$("paste").focus()},320)}},
+    r.stops.length&&{icon:"eye",label:S.hide?"Show delivered stops":"Hide delivered stops",fn:()=>{S.hide=!S.hide;save();render(true)}},
+    r.stops.length&&{icon:"reset",label:"Uncheck all stops",fn:()=>{if(!confirm("Uncheck every stop on this route?"))return;r.stops.forEach(s=>s.items.forEach(i=>i.done=false));r.started=false;save();render()}},
+    {icon:"gear",label:"Route settings",fn:()=>{$("setBox").open=true;setSheet("full");setTimeout(()=>$("setBox").scrollIntoView({block:"start"}),320)}},
+    {icon:"save",label:"Save backup file",fn:exportBackup},
+    {icon:"load",label:"Load backup file",fn:()=>$("importFile").click()}
+  ])};
 $("rname").onchange=e=>{R().name=e.target.value.trim()||"Untitled";save();render(true)};
 $("area").onchange=e=>{R().area=e.target.value.trim();save();render(true)};
 $("toggleHide").onclick=()=>{S.hide=!S.hide;save();render(true)};
-$("resetDone").onclick=()=>{if(!confirm("Uncheck every stop on this route?"))return;R().stops.forEach(s=>s.items.forEach(i=>i.done=false));save();render()};
-$("clearDone").onclick=()=>{R().stops=R().stops.filter(s=>!isDone(s));save();render()};
-$("delRoute").onclick=()=>{if(!confirm("Delete "+(R().name||"this route")+"?"))return;delete S.routes[S.current];const k=Object.keys(S.routes);if(!k.length){const id="r"+Date.now();S.routes[id]={name:"My route",area:"NB, Canada",stops:[]};S.current=id}else S.current=k[0];sel=null;save();render()};
 
 /* ---------- adding + geocoding ---------- */
 function addLines(lines){
   const r=R(),have=new Set(r.stops.map(s=>s.a.toLowerCase()));let n=0;
   lines.map(l=>l.replace(/^\s*\d+[\.\)]\s+/,"").trim()).filter(Boolean).forEach(t=>{if(!have.has(t.toLowerCase())){r.stops.push({id:uid(),a:t,items:[{id:uid(),t:"",n:"",tj:false,done:false}]});have.add(t.toLowerCase());n++}});
-  save();render(true);return n;
+  if(n)r.optimized=false;save();render(true);return n;
 }
 let geocoding=false;
 async function pinMissing(){
@@ -1224,26 +1476,25 @@ async function pinMissing(){
     if(i<miss.length-1)await new Promise(f=>setTimeout(f,1100)); // Nominatim allows 1 request a second
   }
   geocoding=false;render(true);
-  say("addMsg","Pinned "+ok+" of "+miss.length+"."+(fail.length?" Not found: "+fail.join("; ")+". Open the stop and long-press the map to place it.":" Tap Optimize to fit them into the route."),!!fail.length);
+  say("addMsg","Pinned "+ok+" of "+miss.length+"."+(fail.length?" Not found: "+fail.join("; ")+". Open the stop and long-press the map to place it.":" Tap Optimize route to fit them in."),!!fail.length);
 }
-$("addPaste").onclick=()=>{const n=addLines($("paste").value.split("\n"));$("paste").value="";if(n)pinMissing();else say("addMsg","Nothing new to add.")};
+$("addPaste").onclick=()=>{const n=addLines($("paste").value.split("\n"));$("paste").value="";if(n){setSheet("peek");pinMissing()}else say("addMsg","Nothing new to add.")};
 $("pinMissing").onclick=pinMissing;
 
 /* ---------- backup + private import links ---------- */
-$("exportBtn").onclick=()=>{
+function exportBackup(){
   const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);a.download="route-runner-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();
+  a.href=URL.createObjectURL(blob);a.download="route-runner-backup-"+today()+".json";document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
-};
+}
 // Adds routes from a backup; a route that is already on this phone keeps its progress.
 function mergeRoutes(x){
   if(!x||!x.routes)throw 0;let added=0,last=null;
   for(const [id,rt] of Object.entries(x.routes)){if(!rt||!Array.isArray(rt.stops))continue;last=id;if(S.routes[id])continue;S.routes[id]=rt;added++}
   if(!last)throw 0;
-  const empty=Object.entries(S.routes).filter(([id,rt])=>!rt.stops.length&&id!==last);empty.forEach(([id])=>delete S.routes[id]);
-  S.current=last;sel=null;save();return added;
+  Object.entries(S.routes).filter(([id,rt])=>!rt.stops.length&&id!==last).forEach(([id])=>delete S.routes[id]);
+  S.current=last;sel=null;fixDates();save();return added;
 }
-$("importBtn").onclick=()=>$("importFile").click();
 $("importFile").onchange=async e=>{
   const f=e.target.files[0];e.target.value="";if(!f)return;
   try{const n=mergeRoutes(JSON.parse(await f.text()));render();toast(n?"Route loaded":"That route is already on this phone")}
