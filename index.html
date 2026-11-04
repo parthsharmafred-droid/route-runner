@@ -1363,6 +1363,7 @@ function render(keepView){
   if(sheetState==="peek")setSheet("peek");
   if(!keepView)fitNext();else if(mapMode==="next"&&!sel)fitNext();
   scheduleRoad();
+  autoPin();
 }
 
 /* ---------- optimize ---------- */
@@ -1461,25 +1462,40 @@ function addLines(lines){
   lines.map(l=>l.replace(/^\s*\d+[\.\)]\s+/,"").trim()).filter(Boolean).forEach(t=>{if(!have.has(t.toLowerCase())){r.stops.push({id:uid(),a:t,items:[{id:uid(),t:"",n:"",tj:false,done:false}]});have.add(t.toLowerCase());n++}});
   if(n)r.optimized=false;save();render(true);return n;
 }
-let geocoding=false;
-async function pinMissing(){
+let geocoding=false;const pinTried=new Set();
+const sleep=ms=>new Promise(f=>setTimeout(f,ms));
+// "NB-628", "Rte 148 Hwy" -> "Route 628", "Route 148": the form address search knows.
+const normAddr=a=>a.replace(/\bNB[- ]?(\d+)\b/gi,"Route $1").replace(/\b(?:Rte|Rt|Hwy|Highway)\.?\s*(\d+)(?:\s*Hwy)?\b/gi,"Route $1");
+const inNB=(la,ln)=>la>44.4&&la<48.2&&ln>-69.2&&ln<-63.6;
+async function getJSON(url){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),12000);try{const r=await fetch(url,{signal:ctl.signal});return await r.json()}finally{clearTimeout(tm)}}
+// Esri first (best with rural civic numbers), then OpenStreetMap, then Photon.
+async function geocode(text){
+  try{const j=await getJSON("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=1&countryCode=CAN&SingleLine="+encodeURIComponent(text));
+    const c=j.candidates&&j.candidates[0];if(c&&c.score>=80&&inNB(c.location.y,c.location.x))return {la:c.location.y,ln:c.location.x,src:"esri"}}catch(e){}
+  try{const j=await getJSON(NOMINATIM+"?format=json&limit=1&countrycodes=ca&q="+encodeURIComponent(text));
+    if(j[0]&&inNB(+j[0].lat,+j[0].lon))return {la:+j[0].lat,ln:+j[0].lon,src:"osm"}}catch(e){}
+  try{const j=await getJSON("https://photon.komoot.io/api/?limit=1&lat=45.95&lon=-66.65&q="+encodeURIComponent(text));
+    const f=j.features&&j.features[0];if(f&&inNB(f.geometry.coordinates[1],f.geometry.coordinates[0]))return {la:f.geometry.coordinates[1],ln:f.geometry.coordinates[0],src:"photon"}}catch(e){}
+  return null;
+}
+async function pinMissing(auto){
   if(geocoding)return;const r=R(),miss=r.stops.filter(s=>!hasPos(s));
-  if(!miss.length){say("addMsg","Every stop has a pin.");return}
+  if(!miss.length){if(!auto)say("addMsg","Every stop has a pin.");return}
   geocoding=true;let ok=0,fail=[];
   for(let i=0;i<miss.length;i++){
-    const s=miss[i];say("addMsg","Finding pins "+(i+1)+" of "+miss.length+"…");
-    try{
-      const res=await fetch(NOMINATIM+"?format=json&limit=1&countrycodes=ca&q="+encodeURIComponent(q(s)));
-      const j=await res.json();
-      if(j[0]){s.la=+(+j[0].lat).toFixed(7);s.ln=+(+j[0].lon).toFixed(7);ok++;save()}else fail.push(s.a);
-    }catch(e){fail.push(s.a)}
-    if(i<miss.length-1)await new Promise(f=>setTimeout(f,1100)); // Nominatim allows 1 request a second
+    const s=miss[i],m="Finding map pins "+(i+1)+" of "+miss.length+"…";say("addMsg",m);toast(m);
+    const p=await geocode(normAddr(q(s)));
+    if(p){s.la=+p.la.toFixed(7);s.ln=+p.ln.toFixed(7);ok++;save();drawMap()}else fail.push(s.a);
+    await sleep(p&&p.src==="esri"?150:1100); // OpenStreetMap allows 1 request a second
   }
-  geocoding=false;render(true);
-  say("addMsg","Pinned "+ok+" of "+miss.length+"."+(fail.length?" Not found: "+fail.join("; ")+". Open the stop and long-press the map to place it.":" Tap Optimize route to fit them in."),!!fail.length);
+  geocoding=false;render(true);if(ok)fitAll();
+  const msg="Pinned "+ok+" of "+miss.length+"."+(fail.length?" Not found: "+fail.join("; ")+". Open the stop and long-press the right spot on the map to place it.":" Check them on the map, then tap Optimize route.");
+  say("addMsg",msg,!!fail.length);say("optMsg",msg,!!fail.length);toast(fail.length?"Pinned "+ok+" of "+miss.length+" stops":"All "+ok+" stops pinned");
 }
+// Look up pins on its own when a route with unpinned stops is opened.
+function autoPin(){const r=R();if(geocoding||pinTried.has(S.current)||!r.stops.some(s=>!hasPos(s)))return;pinTried.add(S.current);setTimeout(()=>pinMissing(true),400)}
 $("addPaste").onclick=()=>{const n=addLines($("paste").value.split("\n"));$("paste").value="";if(n){setSheet("peek");pinMissing()}else say("addMsg","Nothing new to add.")};
-$("pinMissing").onclick=pinMissing;
+$("pinMissing").onclick=()=>pinMissing();
 
 /* ---------- backup + private import links ---------- */
 function exportBackup(){
