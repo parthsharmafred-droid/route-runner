@@ -1050,7 +1050,9 @@ let toastT=null;const toast=t=>{const e=$("toast");e.textContent=t;e.classList.a
 let sel=null,mapMode="next",query="";
 
 const q=s=>{const a=(R().area||"").trim();return a&&!s.a.toLowerCase().includes(a.toLowerCase())?s.a+", "+a:s.a};
-const dest=s=>hasPos(s)?s.la+","+s.ln:q(s);
+// Estimated pins (s.approx) navigate by address so Google Maps finds the real door.
+const dest=s=>hasPos(s)&&!s.approx?s.la+","+s.ln:q(s);
+const needsPin=s=>!hasPos(s)||s.approx;
 const navUrl=s=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(dest(s))+"&travelmode=driving";
 const batchUrl=r=>{const p=r.stops.filter(s=>!isDone(s)).slice(0,10);return p.length?"https://www.google.com/maps/dir//"+p.map(s=>encodeURIComponent(dest(s))).join("/"):null};
 const fmt=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
@@ -1149,7 +1151,7 @@ map.on("contextmenu",e=>{
   if(drawing)return;
   const s=sel&&R().stops.find(x=>x.id===sel);if(!s){toast("Open a stop first, then long-press to move its pin");return}
   if(!confirm("Move the pin for "+s.a+" here?"))return;
-  s.la=+e.latlng.lat.toFixed(7);s.ln=+e.latlng.lng.toFixed(7);save();render(true);toast("Pin moved for "+s.a);
+  s.la=+e.latlng.lat.toFixed(7);s.ln=+e.latlng.lng.toFixed(7);delete s.approx;save();render(true);toast("Pin moved for "+s.a);
 });
 const topPad=()=>drawing?document.querySelector(".dtopbar").getBoundingClientRect().bottom+28:(parseInt(getComputedStyle(document.querySelector(".topl")).top)||0)+60;
 function fitPts(pts,maxZoom,bottom){if(!pts.length)return;map.invalidateSize();
@@ -1351,7 +1353,7 @@ function render(keepView){
     const bd=li.querySelector(".badge");bd.textContent=dn?"✓":String(i+1);
     bd.setAttribute("aria-label",(dn?"Mark not delivered: ":"Mark delivered: ")+s.a);
     bd.onclick=()=>{const v=!dn;s.items.forEach(x=>x.done=v);r.started=true;if(v&&sel===s.id)sel=null;save();render(true)};
-    li.querySelector(".a").textContent=s.a+(hasPos(s)?"":" (no pin)");
+    li.querySelector(".a").textContent=s.a+(!hasPos(s)?" (no pin)":s.approx?" (approx. pin)":"");
     const m=li.querySelector(".m"),sm=summaryOf(s);
     if(s.g&&!dn){const t=document.createElement("span");t.className="gtag";t.style.setProperty("--gc",gcol(s.g));m.appendChild(t);m.append("Group "+s.g+(sm?" · "+sm:""))}
     else if(sm)m.textContent=sm;else m.remove();
@@ -1479,21 +1481,22 @@ async function geocode(text){
   return null;
 }
 async function pinMissing(auto){
-  if(geocoding)return;const r=R(),miss=r.stops.filter(s=>!hasPos(s));
+  if(geocoding)return;const r=R(),miss=r.stops.filter(needsPin);
   if(!miss.length){if(!auto)say("addMsg","Every stop has a pin.");return}
-  geocoding=true;let ok=0,fail=[];
+  geocoding=true;let ok=0,kept=0,fail=[];
   for(let i=0;i<miss.length;i++){
     const s=miss[i],m="Finding map pins "+(i+1)+" of "+miss.length+"…";say("addMsg",m);toast(m);
     const p=await geocode(normAddr(q(s)));
-    if(p){s.la=+p.la.toFixed(7);s.ln=+p.ln.toFixed(7);ok++;save();drawMap()}else fail.push(s.a);
+    if(p){s.la=+p.la.toFixed(7);s.ln=+p.ln.toFixed(7);delete s.approx;ok++;save();drawMap()}else if(s.approx)kept++;else fail.push(s.a);
     await sleep(p&&p.src==="esri"?150:1100); // OpenStreetMap allows 1 request a second
   }
   geocoding=false;render(true);if(ok)fitAll();
-  const msg="Pinned "+ok+" of "+miss.length+"."+(fail.length?" Not found: "+fail.join("; ")+". Open the stop and long-press the right spot on the map to place it.":" Check them on the map, then tap Optimize route.");
+  if(!ok&&!fail.length){if(!auto)toast("Couldn't find exact pins. Keeping the estimated ones.");return}
+  const msg="Pinned "+ok+" of "+miss.length+"."+(kept?" "+kept+" kept their estimated pin.":"")+(fail.length?" Not found: "+fail.join("; ")+". Open the stop and long-press the right spot on the map to place it.":" Check them on the map, then tap Optimize route.");
   say("addMsg",msg,!!fail.length);say("optMsg",msg,!!fail.length);toast(fail.length?"Pinned "+ok+" of "+miss.length+" stops":"All "+ok+" stops pinned");
 }
 // Look up pins on its own when a route with unpinned stops is opened.
-function autoPin(){const r=R();if(geocoding||pinTried.has(S.current)||!r.stops.some(s=>!hasPos(s)))return;pinTried.add(S.current);setTimeout(()=>pinMissing(true),400)}
+function autoPin(){const r=R();if(geocoding||pinTried.has(S.current)||!r.stops.some(needsPin))return;pinTried.add(S.current);setTimeout(()=>pinMissing(true),400)}
 $("addPaste").onclick=()=>{const n=addLines($("paste").value.split("\n"));$("paste").value="";if(n){setSheet("peek");pinMissing()}else say("addMsg","Nothing new to add.")};
 $("pinMissing").onclick=()=>pinMissing();
 
